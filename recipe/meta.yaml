@@ -1,31 +1,32 @@
 {% set name = "trame-server" %}
-{% set version = "4.1.0" %}
+{% set version = "3.12.2" %}
 
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: cad870dd0c63e7df143cf315b00a4c0c6da11965f26abb31c2a86b1bb0de3e2b
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
+  sha256: b3b390be55ce5f7de8895f41f074967fd25f8c700d4b05204bdfd13bfd11bd08
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: true  # [py<310]
 
 requirements:
   host:
     - pip
-    - python {{ python_min }}
+    - python
     - hatchling
   run:
-    - python >={{ python_min }}
-    - wslink >=2.2.1
-    - more-itertools
+    - python
+    - wslink >=2.5.7,<3
     - trame-common >=1.2.3
+    - more-itertools
 
+# PyPi package has no tests included, use only `pip check`
 test:
   imports:
     - trame_server
@@ -34,13 +35,20 @@ test:
     - pip check
   requires:
     - pip
-    - python {{ python_min }}
 
 about:
-  home: https://pypi.org/project/trame-server/
-  summary: Internal server side implementation of trame
+  home: https://github.com/Kitware/trame-server
   license: Apache-2.0
+  license_family: Apache
   license_file: LICENSE
+  summary: Internal server side implementation of trame
+  description: |
+    trame-server is the server implementation of trame.
+    This Python library provide the server implementation of the shared state and controller
+    along with the definition of the web server.
+    The web server aims to be flexible so it can be use within a Jupyter environment or as a standalone desktop application.
+  doc_url: https://github.com/Kitware/trame-server/blob/v3.12.2/README.rst
+  dev_url: https://github.com/Kitware/trame-server
 
 extra:
   recipe-maintainers:
